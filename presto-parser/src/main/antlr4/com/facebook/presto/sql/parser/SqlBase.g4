@@ -68,7 +68,7 @@ statement
     | SHOW PARTITIONS (FROM | IN) qualifiedName
         (WHERE booleanExpression)?
         (ORDER BY sortItem (',' sortItem)*)?
-        (LIMIT limit=(INTEGER_VALUE | ALL))?                           #showPartitions
+        (LIMIT limit=(BIGINT_VALUE | ALL))?                           #showPartitions
     ;
 
 query
@@ -94,7 +94,7 @@ tableProperty
 queryNoWith:
       queryTerm
       (ORDER BY sortItem (',' sortItem)*)?
-      (LIMIT limit=(INTEGER_VALUE | ALL))?
+      (LIMIT limit=(BIGINT_VALUE | ALL))?
       (APPROXIMATE AT confidence=number CONFIDENCE)?
     ;
 
@@ -251,6 +251,7 @@ primaryExpression
     | booleanValue                                                                   #booleanLiteral
     | STRING                                                                         #stringLiteral
     | BINARY_LITERAL                                                                 #binaryLiteral
+    | INT_LITERAL                                                                    #intLiteral
     | POSITION '(' valueExpression IN valueExpression ')'                            #position
     | '(' expression (',' expression)+ ')'                                           #rowConstructor
     | ROW '(' expression (',' expression)* ')'                                       #rowConstructor
@@ -268,10 +269,10 @@ primaryExpression
     | identifier                                                                     #columnReference
     | base=primaryExpression '.' fieldName=identifier                                #dereference
     | name=CURRENT_DATE                                                              #specialDateTimeFunction
-    | name=CURRENT_TIME ('(' precision=INTEGER_VALUE ')')?                           #specialDateTimeFunction
-    | name=CURRENT_TIMESTAMP ('(' precision=INTEGER_VALUE ')')?                      #specialDateTimeFunction
-    | name=LOCALTIME ('(' precision=INTEGER_VALUE ')')?                              #specialDateTimeFunction
-    | name=LOCALTIMESTAMP ('(' precision=INTEGER_VALUE ')')?                         #specialDateTimeFunction
+    | name=CURRENT_TIME ('(' precision=BIGINT_VALUE ')')?                           #specialDateTimeFunction
+    | name=CURRENT_TIMESTAMP ('(' precision=BIGINT_VALUE ')')?                      #specialDateTimeFunction
+    | name=LOCALTIME ('(' precision=BIGINT_VALUE ')')?                              #specialDateTimeFunction
+    | name=LOCALTIMESTAMP ('(' precision=BIGINT_VALUE ')')?                         #specialDateTimeFunction
     | SUBSTRING '(' valueExpression FROM valueExpression (FOR valueExpression)? ')'  #substring
     | NORMALIZE '(' valueExpression (',' normalForm)? ')'                            #normalize
     | EXTRACT '(' identifier FROM valueExpression ')'                                #extract
@@ -307,7 +308,7 @@ type
     ;
 
 typeParameter
-    : INTEGER_VALUE | type
+    : BIGINT_VALUE | type
     ;
 
 baseType
@@ -387,7 +388,7 @@ quotedIdentifier
 
 number
     : DECIMAL_VALUE  #decimalLiteral
-    | INTEGER_VALUE  #integerLiteral
+    | BIGINT_VALUE   #bigintLiteral
     ;
 
 nonReserved
@@ -606,7 +607,11 @@ BINARY_LITERAL
     :  'X\'' (~'\'')* '\''
     ;
 
-INTEGER_VALUE
+INT_LITERAL
+    :  'INT\'' BIGINT_VALUE '\''
+    ;
+
+BIGINT_VALUE
     : DIGIT+
     ;
 

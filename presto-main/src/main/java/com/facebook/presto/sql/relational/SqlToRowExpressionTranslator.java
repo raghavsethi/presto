@@ -40,6 +40,7 @@ import com.facebook.presto.sql.tree.IfExpression;
 import com.facebook.presto.sql.tree.InListExpression;
 import com.facebook.presto.sql.tree.InPredicate;
 import com.facebook.presto.sql.tree.InputReference;
+import com.facebook.presto.sql.tree.IntLiteral;
 import com.facebook.presto.sql.tree.IntervalLiteral;
 import com.facebook.presto.sql.tree.IsNotNullPredicate;
 import com.facebook.presto.sql.tree.IsNullPredicate;
@@ -68,6 +69,7 @@ import static com.facebook.presto.metadata.FunctionKind.SCALAR;
 import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
+import static com.facebook.presto.spi.type.IntType.INT;
 import static com.facebook.presto.spi.type.TimeWithTimeZoneType.TIME_WITH_TIME_ZONE;
 import static com.facebook.presto.spi.type.TimestampWithTimeZoneType.TIMESTAMP_WITH_TIME_ZONE;
 import static com.facebook.presto.spi.type.TypeSignature.parseTypeSignature;
@@ -175,6 +177,12 @@ public final class SqlToRowExpressionTranslator
         protected RowExpression visitLongLiteral(LongLiteral node, Void context)
         {
             return constant(node.getValue(), BIGINT);
+        }
+
+        @Override
+        protected RowExpression visitIntLiteral(IntLiteral node, Void context)
+        {
+            return constant(node.getValue(), INT);
         }
 
         @Override

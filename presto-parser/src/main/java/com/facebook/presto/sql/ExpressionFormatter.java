@@ -40,6 +40,7 @@ import com.facebook.presto.sql.tree.IfExpression;
 import com.facebook.presto.sql.tree.InListExpression;
 import com.facebook.presto.sql.tree.InPredicate;
 import com.facebook.presto.sql.tree.InputReference;
+import com.facebook.presto.sql.tree.IntLiteral;
 import com.facebook.presto.sql.tree.IntervalLiteral;
 import com.facebook.presto.sql.tree.IsNotNullPredicate;
 import com.facebook.presto.sql.tree.IsNullPredicate;
@@ -180,6 +181,12 @@ public final class ExpressionFormatter
         protected String visitLongLiteral(LongLiteral node, Boolean unmangleNames)
         {
             return Long.toString(node.getValue());
+        }
+
+        @Override
+        protected String visitIntLiteral(IntLiteral node, Boolean context)
+        {
+            return "INT'" + Long.toString(node.getValue()) + "'";
         }
 
         @Override

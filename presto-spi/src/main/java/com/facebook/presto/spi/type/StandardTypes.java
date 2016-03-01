@@ -16,6 +16,7 @@ package com.facebook.presto.spi.type;
 public final class StandardTypes
 {
     public static final String BIGINT = "bigint";
+    public static final String INT = "int";
     public static final String BOOLEAN = "boolean";
     public static final String DATE = "date";
     public static final String DOUBLE = "double";

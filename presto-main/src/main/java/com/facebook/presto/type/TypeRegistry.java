@@ -38,6 +38,7 @@ import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
 import static com.facebook.presto.spi.type.DateType.DATE;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
 import static com.facebook.presto.spi.type.HyperLogLogType.HYPER_LOG_LOG;
+import static com.facebook.presto.spi.type.IntType.INT;
 import static com.facebook.presto.spi.type.IntervalDayTimeType.INTERVAL_DAY_TIME;
 import static com.facebook.presto.spi.type.IntervalYearMonthType.INTERVAL_YEAR_MONTH;
 import static com.facebook.presto.spi.type.P4HyperLogLogType.P4_HYPER_LOG_LOG;
@@ -85,6 +86,7 @@ public final class TypeRegistry
         // always add the built-in types; Presto will not function without these
         addType(BOOLEAN);
         addType(BIGINT);
+        addType(INT);
         addType(DOUBLE);
         addType(VARBINARY);
         addType(DATE);

@@ -59,6 +59,7 @@ import com.facebook.presto.sql.tree.IfExpression;
 import com.facebook.presto.sql.tree.InListExpression;
 import com.facebook.presto.sql.tree.InPredicate;
 import com.facebook.presto.sql.tree.Insert;
+import com.facebook.presto.sql.tree.IntLiteral;
 import com.facebook.presto.sql.tree.Intersect;
 import com.facebook.presto.sql.tree.IntervalLiteral;
 import com.facebook.presto.sql.tree.IsNotNullPredicate;
@@ -1205,9 +1206,15 @@ class AstBuilder
     }
 
     @Override
-    public Node visitIntegerLiteral(SqlBaseParser.IntegerLiteralContext context)
+    public Node visitBigintLiteral(SqlBaseParser.BigintLiteralContext context)
     {
         return new LongLiteral(getLocation(context), context.getText());
+    }
+
+    @Override
+    public Node visitIntLiteral(SqlBaseParser.IntLiteralContext context)
+    {
+        return new IntLiteral(getLocation(context), unquote(context.INT_LITERAL().getText().substring(3)));
     }
 
     @Override
@@ -1536,8 +1543,8 @@ class AstBuilder
 
     private static String typeParameterToString(SqlBaseParser.TypeParameterContext typeParameter)
     {
-        if (typeParameter.INTEGER_VALUE() != null) {
-            return typeParameter.INTEGER_VALUE().toString();
+        if (typeParameter.BIGINT_VALUE() != null) {
+            return typeParameter.BIGINT_VALUE().toString();
         }
         if (typeParameter.type() != null) {
             return getType(typeParameter.type());

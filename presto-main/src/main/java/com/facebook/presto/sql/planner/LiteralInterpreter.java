@@ -33,6 +33,7 @@ import com.facebook.presto.sql.tree.DoubleLiteral;
 import com.facebook.presto.sql.tree.Expression;
 import com.facebook.presto.sql.tree.FunctionCall;
 import com.facebook.presto.sql.tree.GenericLiteral;
+import com.facebook.presto.sql.tree.IntLiteral;
 import com.facebook.presto.sql.tree.IntervalLiteral;
 import com.facebook.presto.sql.tree.Literal;
 import com.facebook.presto.sql.tree.LongLiteral;
@@ -56,6 +57,7 @@ import static com.facebook.presto.metadata.FunctionKind.SCALAR;
 import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
+import static com.facebook.presto.spi.type.IntType.INT;
 import static com.facebook.presto.spi.type.TypeSignature.parseTypeSignature;
 import static com.facebook.presto.spi.type.VarcharType.VARCHAR;
 import static com.facebook.presto.sql.analyzer.SemanticErrorCode.INVALID_LITERAL;
@@ -113,6 +115,10 @@ public final class LiteralInterpreter
         }
 
         checkArgument(Primitives.wrap(type.getJavaType()).isInstance(object), "object.getClass (%s) and type.getJavaType (%s) do not agree", object.getClass(), type.getJavaType());
+
+        if (type.equals(INT)) {
+            return new IntLiteral(object.toString());
+        }
 
         if (type.equals(BIGINT)) {
             return new LongLiteral(object.toString());
@@ -205,6 +211,12 @@ public final class LiteralInterpreter
 
         @Override
         protected Long visitLongLiteral(LongLiteral node, ConnectorSession session)
+        {
+            return node.getValue();
+        }
+
+        @Override
+        protected Long visitIntLiteral(IntLiteral node, ConnectorSession session)
         {
             return node.getValue();
         }
