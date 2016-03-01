@@ -42,6 +42,7 @@ import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
 import static com.facebook.presto.spi.type.DateType.DATE;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
+import static com.facebook.presto.spi.type.IntType.INT;
 import static com.facebook.presto.spi.type.TimestampType.TIMESTAMP;
 import static com.facebook.presto.spi.type.VarbinaryType.VARBINARY;
 import static com.facebook.presto.spi.type.VarcharType.VARCHAR;
@@ -50,7 +51,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 public final class BlackHolePageSourceProvider
         implements ConnectorPageSourceProvider
 {
-    private static final Set<Type> SUPPORTED_TYPES = ImmutableSet.of(BIGINT, DOUBLE, BOOLEAN, DATE, TIMESTAMP, VARCHAR, VARBINARY);
+    private static final Set<Type> SUPPORTED_TYPES = ImmutableSet.of(INT, BIGINT, DOUBLE, BOOLEAN, DATE, TIMESTAMP, VARCHAR, VARBINARY);
 
     @Override
     public ConnectorPageSource createPageSource(

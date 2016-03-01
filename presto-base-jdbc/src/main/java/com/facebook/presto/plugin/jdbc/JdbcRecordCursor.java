@@ -17,6 +17,7 @@ import com.facebook.presto.spi.PrestoException;
 import com.facebook.presto.spi.RecordCursor;
 import com.facebook.presto.spi.type.BigintType;
 import com.facebook.presto.spi.type.DateType;
+import com.facebook.presto.spi.type.IntType;
 import com.facebook.presto.spi.type.TimeType;
 import com.facebook.presto.spi.type.TimestampType;
 import com.facebook.presto.spi.type.Type;
@@ -137,6 +138,9 @@ public class JdbcRecordCursor
         try {
             Type type = getType(field);
             if (type.equals(BigintType.BIGINT)) {
+                return resultSet.getLong(field + 1);
+            }
+            if (type.equals(IntType.INT)) {
                 return resultSet.getLong(field + 1);
             }
             if (type.equals(DateType.DATE)) {
