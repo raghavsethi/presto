@@ -46,6 +46,7 @@ import static com.facebook.presto.hive.HiveUtil.datePartitionKey;
 import static com.facebook.presto.hive.HiveUtil.doublePartitionKey;
 import static com.facebook.presto.hive.HiveUtil.getDeserializer;
 import static com.facebook.presto.hive.HiveUtil.getTableObjectInspector;
+import static com.facebook.presto.hive.HiveUtil.intPartitionKey;
 import static com.facebook.presto.hive.HiveUtil.isStructuralType;
 import static com.facebook.presto.hive.HiveUtil.timestampPartitionKey;
 import static com.facebook.presto.hive.util.SerDeUtils.getBlockObject;
@@ -54,6 +55,7 @@ import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
 import static com.facebook.presto.spi.type.DateType.DATE;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
+import static com.facebook.presto.spi.type.IntType.INT;
 import static com.facebook.presto.spi.type.TimestampType.TIMESTAMP;
 import static com.facebook.presto.spi.type.VarbinaryType.VARBINARY;
 import static com.facebook.presto.spi.type.VarcharType.VARCHAR;
@@ -181,6 +183,9 @@ class GenericHiveRecordCursor<K, V extends Writable>
                 }
                 else if (BIGINT.equals(type)) {
                     longs[columnIndex] = bigintPartitionKey(partitionKey.getValue(), name);
+                }
+                else if (INT.equals(type)) {
+                    longs[columnIndex] = intPartitionKey(partitionKey.getValue(), name);
                 }
                 else if (DOUBLE.equals(type)) {
                     doubles[columnIndex] = doublePartitionKey(partitionKey.getValue(), name);
@@ -468,6 +473,9 @@ class GenericHiveRecordCursor<K, V extends Writable>
             parseBooleanColumn(column);
         }
         else if (BIGINT.equals(type)) {
+            parseLongColumn(column);
+        }
+        else if (INT.equals(type)) {
             parseLongColumn(column);
         }
         else if (DOUBLE.equals(type)) {

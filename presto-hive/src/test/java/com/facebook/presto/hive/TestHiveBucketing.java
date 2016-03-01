@@ -289,6 +289,7 @@ public class TestHiveBucketing
             case StandardTypes.BOOLEAN:
                 type.writeBoolean(blockBuilder, (Boolean) element);
                 break;
+            case StandardTypes.INT:
             case StandardTypes.BIGINT:
                 type.writeLong(blockBuilder, ((Number) element).longValue());
                 break;

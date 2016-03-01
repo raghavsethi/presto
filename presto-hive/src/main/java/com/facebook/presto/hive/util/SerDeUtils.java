@@ -21,6 +21,7 @@ import com.facebook.presto.spi.type.BigintType;
 import com.facebook.presto.spi.type.BooleanType;
 import com.facebook.presto.spi.type.DateType;
 import com.facebook.presto.spi.type.DoubleType;
+import com.facebook.presto.spi.type.IntType;
 import com.facebook.presto.spi.type.TimestampType;
 import com.facebook.presto.spi.type.Type;
 import com.facebook.presto.spi.type.VarcharType;
@@ -95,13 +96,13 @@ public final class SerDeUtils
                 BooleanType.BOOLEAN.writeBoolean(builder, ((BooleanObjectInspector) inspector).get(object));
                 return;
             case BYTE:
-                BigintType.BIGINT.writeLong(builder, ((ByteObjectInspector) inspector).get(object));
+                IntType.INT.writeLong(builder, ((ByteObjectInspector) inspector).get(object));
                 return;
             case SHORT:
-                BigintType.BIGINT.writeLong(builder, ((ShortObjectInspector) inspector).get(object));
+                IntType.INT.writeLong(builder, ((ShortObjectInspector) inspector).get(object));
                 return;
             case INT:
-                BigintType.BIGINT.writeLong(builder, ((IntObjectInspector) inspector).get(object));
+                IntType.INT.writeLong(builder, ((IntObjectInspector) inspector).get(object));
                 return;
             case LONG:
                 BigintType.BIGINT.writeLong(builder, ((LongObjectInspector) inspector).get(object));

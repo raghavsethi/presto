@@ -64,6 +64,7 @@ import static com.facebook.presto.hive.HiveUtil.bigintPartitionKey;
 import static com.facebook.presto.hive.HiveUtil.booleanPartitionKey;
 import static com.facebook.presto.hive.HiveUtil.datePartitionKey;
 import static com.facebook.presto.hive.HiveUtil.doublePartitionKey;
+import static com.facebook.presto.hive.HiveUtil.intPartitionKey;
 import static com.facebook.presto.hive.HiveUtil.timestampPartitionKey;
 import static com.facebook.presto.hive.parquet.HdfsParquetDataSource.buildHdfsParquetDataSource;
 import static com.facebook.presto.hive.parquet.ParquetTypeUtils.getParquetType;
@@ -74,6 +75,7 @@ import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
 import static com.facebook.presto.spi.type.DateType.DATE;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
+import static com.facebook.presto.spi.type.IntType.INT;
 import static com.facebook.presto.spi.type.StandardTypes.ARRAY;
 import static com.facebook.presto.spi.type.StandardTypes.MAP;
 import static com.facebook.presto.spi.type.StandardTypes.ROW;
@@ -181,6 +183,9 @@ public class ParquetHiveRecordCursor
                 }
                 else if (type.equals(BOOLEAN)) {
                     booleans[columnIndex] = booleanPartitionKey(partitionKeyValue, columnName);
+                }
+                else if (type.equals(INT)) {
+                    longs[columnIndex] = intPartitionKey(partitionKeyValue, columnName);
                 }
                 else if (type.equals(BIGINT)) {
                     longs[columnIndex] = bigintPartitionKey(partitionKeyValue, columnName);
@@ -1285,7 +1290,7 @@ public class ParquetHiveRecordCursor
         public void addInt(int value)
         {
             addMissingValues();
-            BIGINT.writeLong(builder, value);
+            INT.writeLong(builder, value);
         }
     }
 }

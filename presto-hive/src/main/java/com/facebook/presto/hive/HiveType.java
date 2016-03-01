@@ -44,6 +44,7 @@ import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
 import static com.facebook.presto.spi.type.DateType.DATE;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
+import static com.facebook.presto.spi.type.IntType.INT;
 import static com.facebook.presto.spi.type.TimestampType.TIMESTAMP;
 import static com.facebook.presto.spi.type.VarbinaryType.VARBINARY;
 import static com.facebook.presto.spi.type.VarcharType.VARCHAR;
@@ -212,6 +213,9 @@ public final class HiveType
         if (BIGINT.equals(type)) {
             return HIVE_LONG.typeInfo;
         }
+        if (INT.equals(type)) {
+            return HIVE_INT.typeInfo;
+        }
         if (DOUBLE.equals(type)) {
             return HIVE_DOUBLE.typeInfo;
         }
@@ -295,11 +299,11 @@ public final class HiveType
             case BOOLEAN:
                 return BOOLEAN;
             case BYTE:
-                return BIGINT;
+                return INT;
             case SHORT:
-                return BIGINT;
+                return INT;
             case INT:
-                return BIGINT;
+                return INT;
             case LONG:
                 return BIGINT;
             case FLOAT:

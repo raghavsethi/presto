@@ -46,6 +46,7 @@ import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
 import static com.facebook.presto.spi.type.DateType.DATE;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
+import static com.facebook.presto.spi.type.IntType.INT;
 import static com.facebook.presto.spi.type.TimestampType.TIMESTAMP;
 import static com.facebook.presto.spi.type.VarcharType.VARCHAR;
 import static com.google.common.base.MoreObjects.toStringHelper;
@@ -114,7 +115,7 @@ final class HiveBucketing
                     case BYTE:
                     case SHORT:
                     case INT:
-                        return Ints.checkedCast(BIGINT.getLong(block, position));
+                        return Ints.checkedCast(INT.getLong(block, position));
                     case LONG:
                         long bigintValue = BIGINT.getLong(block, position);
                         return (int) ((bigintValue >>> 32) ^ bigintValue);

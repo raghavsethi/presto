@@ -13,6 +13,7 @@
  */
 package com.facebook.presto.hive;
 
+import com.facebook.presto.hadoop.shaded.com.google.common.primitives.Ints;
 import com.facebook.presto.spi.ConnectorTableHandle;
 import com.facebook.presto.spi.ErrorCodeSupplier;
 import com.facebook.presto.spi.PrestoException;
@@ -88,6 +89,7 @@ import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
 import static com.facebook.presto.spi.type.DateType.DATE;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
+import static com.facebook.presto.spi.type.IntType.INT;
 import static com.facebook.presto.spi.type.TimestampType.TIMESTAMP;
 import static com.facebook.presto.spi.type.VarcharType.VARCHAR;
 import static com.google.common.base.Preconditions.checkArgument;
@@ -365,7 +367,7 @@ public final class HiveUtil
                 return NullableValue.of(BOOLEAN, parseBoolean(value));
             }
 
-            if (HIVE_BYTE.equals(hiveType) || HIVE_SHORT.equals(hiveType) || HIVE_INT.equals(hiveType) || HIVE_LONG.equals(hiveType)) {
+            if (HIVE_BYTE.equals(hiveType) || HIVE_SHORT.equals(hiveType) || HIVE_LONG.equals(hiveType)) {
                 if (isNull) {
                     return NullableValue.asNull(BIGINT);
                 }
@@ -373,6 +375,16 @@ public final class HiveUtil
                     return NullableValue.of(BIGINT, 0L);
                 }
                 return NullableValue.of(BIGINT, parseLong(value));
+            }
+
+            if (HIVE_INT.equals(hiveType)) {
+                if (isNull) {
+                    return NullableValue.asNull(INT);
+                }
+                if (value.isEmpty()) {
+                    return NullableValue.of(INT, 0L);
+                }
+                return NullableValue.of(INT, Ints.checkedCast(parseLong(value)));
             }
 
             if (HIVE_DATE.equals(hiveType)) {
@@ -471,6 +483,16 @@ public final class HiveUtil
     }
 
     public static long bigintPartitionKey(String value, String name)
+    {
+        try {
+            return parseLong(value);
+        }
+        catch (NumberFormatException e) {
+            throw new PrestoException(HIVE_INVALID_PARTITION_VALUE, format("Invalid partition value '%s' for BIGINT partition key: %s", value, name));
+        }
+    }
+
+    public static long intPartitionKey(String value, String name)
     {
         try {
             return parseLong(value);
