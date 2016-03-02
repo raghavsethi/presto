@@ -292,23 +292,23 @@ public final class MathFunctions
         return ThreadLocalRandom.current().nextLong(value);
     }
 
-    @Description("round to nearest integer")
+    @Description("round to 0 decimal places")
     @ScalarFunction("round")
     @SqlType(StandardTypes.INT)
     public static long roundInt(@SqlType(StandardTypes.INT) long num)
     {
-        return round(num, 0);
+        return num;
     }
 
-    @Description("round to nearest integer")
+    @Description("round to 0 decimal places")
     @ScalarFunction
     @SqlType(StandardTypes.BIGINT)
     public static long round(@SqlType(StandardTypes.BIGINT) long num)
     {
-        return round(num, 0);
+        return num;
     }
 
-    @Description("round to nearest integer")
+    @Description("round to given number of decimal places")
     @ScalarFunction("round")
     @SqlType(StandardTypes.INT)
     public static long roundInt(@SqlType(StandardTypes.INT) long num, @SqlType(StandardTypes.BIGINT) long decimals)
@@ -316,7 +316,7 @@ public final class MathFunctions
         return num;
     }
 
-    @Description("round to nearest integer")
+    @Description("round to given number of decimal places")
     @ScalarFunction
     @SqlType(StandardTypes.BIGINT)
     public static long round(@SqlType(StandardTypes.BIGINT) long num, @SqlType(StandardTypes.BIGINT) long decimals)
@@ -324,7 +324,7 @@ public final class MathFunctions
         return num;
     }
 
-    @Description("round to nearest integer")
+    @Description("round to 0 decimal places")
     @ScalarFunction
     @SqlType(StandardTypes.DOUBLE)
     public static double round(@SqlType(StandardTypes.DOUBLE) double num)
