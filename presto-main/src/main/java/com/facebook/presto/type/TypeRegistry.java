@@ -13,6 +13,7 @@
  */
 package com.facebook.presto.type;
 
+import com.facebook.presto.spi.StandardErrorCode;
 import com.facebook.presto.spi.type.StandardTypes;
 import com.facebook.presto.spi.type.Type;
 import com.facebook.presto.spi.type.TypeManager;
@@ -217,6 +218,8 @@ public final class TypeRegistry
             return true;
         }
         switch (fromTypeBase) {
+            case StandardTypes.INT:
+                return StandardTypes.BIGINT.equals(toTypeBase) || StandardTypes.DOUBLE.equals(toTypeBase);
             case StandardTypes.BIGINT:
                 return StandardTypes.DOUBLE.equals(toTypeBase);
             case StandardTypes.DATE:

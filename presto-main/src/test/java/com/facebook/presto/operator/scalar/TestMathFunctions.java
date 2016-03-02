@@ -21,6 +21,7 @@ import static com.facebook.presto.spi.StandardErrorCode.NUMERIC_VALUE_OUT_OF_RAN
 import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
+import static com.facebook.presto.spi.type.IntType.INT;
 import static com.facebook.presto.spi.type.VarcharType.VARCHAR;
 
 public class TestMathFunctions
@@ -35,6 +36,9 @@ public class TestMathFunctions
     @Test
     public void testAbs()
     {
+        assertFunction("abs(INT'123')", INT, 123);
+        assertFunction("abs(INT'-123')", INT, 123);
+        assertFunction("abs(CAST(NULL AS INT))", INT, null);
         assertFunction("abs(123)", BIGINT, 123L);
         assertFunction("abs(-123)", BIGINT, 123L);
         assertFunction("abs(CAST(NULL AS BIGINT))", BIGINT, null);
@@ -96,6 +100,9 @@ public class TestMathFunctions
     @Test
     public void testCeil()
     {
+        assertFunction("ceil(INT'123')", INT, 123);
+        assertFunction("ceil(INT'-123')", INT, -123);
+        assertFunction("ceil(CAST(NULL as INT))", INT, null);
         assertFunction("ceil(123)", BIGINT, 123L);
         assertFunction("ceil(-123)", BIGINT, -123L);
         assertFunction("ceil(CAST(NULL as BIGINT))", BIGINT, null);
@@ -159,6 +166,9 @@ public class TestMathFunctions
     @Test
     public void testFloor()
     {
+        assertFunction("floor(INT'123')", INT, 123);
+        assertFunction("floor(INT'-123')", INT, -123);
+        assertFunction("floor(CAST(NULL as INT))", INT, null);
         assertFunction("floor(123)", BIGINT, 123L);
         assertFunction("floor(-123)", BIGINT, -123L);
         assertFunction("floor(CAST(NULL as BIGINT))", BIGINT, null);
@@ -212,6 +222,12 @@ public class TestMathFunctions
     @Test
     public void testMod()
     {
+        for (long left : longLefts) {
+            for (long right : longRights) {
+                assertFunction("mod( INT'" + left + "' , INT'" + right + "' )", INT, (int) (left % right));
+            }
+        }
+        
         for (long left : longLefts) {
             for (long right : longRights) {
                 assertFunction("mod(" + left + ", " + right + ")", BIGINT, left % right);
@@ -343,6 +359,8 @@ public class TestMathFunctions
     @Test
     public void testRound()
     {
+        assertFunction("round( INT'3')", INT, 3);
+        assertFunction("round(INT'-3')", INT, -3);
         assertFunction("round( 3)", BIGINT, 3L);
         assertFunction("round(-3)", BIGINT, -3L);
         assertFunction("round(CAST(NULL as BIGINT))", BIGINT, null);
@@ -356,6 +374,8 @@ public class TestMathFunctions
         assertFunction("round(-3.99)", DOUBLE, -4.0);
         assertFunction("round(CAST(NULL as DOUBLE))", DOUBLE, null);
 
+        assertFunction("round( INT'3', 0)", INT, 3);
+        assertFunction("round(INT'-3', 0)", INT, -3);
         assertFunction("round( 3, 0)", BIGINT, 3L);
         assertFunction("round(-3, 0)", BIGINT, -3L);
         assertFunction("round( 3.0, 0)", DOUBLE, 3.0);
@@ -367,6 +387,8 @@ public class TestMathFunctions
         assertFunction("round(-3.5001, 0)", DOUBLE, -4.0);
         assertFunction("round(-3.99, 0)", DOUBLE, -4.0);
 
+        assertFunction("round( INT'3', 1)", INT, 3);
+        assertFunction("round(INT'-3', 1)", INT, -3);
         assertFunction("round( 3, 1)", BIGINT, 3L);
         assertFunction("round(-3, 1)", BIGINT, -3L);
         assertFunction("round(CAST(NULL as BIGINT), CAST(NULL as BIGINT))", BIGINT, null);
@@ -425,6 +447,13 @@ public class TestMathFunctions
     public void testGreatest()
             throws Exception
     {
+        // integer
+        assertFunction("greatest(INT'1', INT'2')", INT, 2);
+        assertFunction("greatest(INT'-1', INT'-2')", INT, -1);
+        assertFunction("greatest(INT'5', INT'4', INT'3', INT'2', INT'1', INT'2', INT'3', INT'4', INT'1', INT'5')", INT, 5);
+        assertFunction("greatest(INT'-1')", INT, -1);
+        assertFunction("greatest(INT'5', INT'4', CAST(NULL as INT), INT'3')", INT, null);
+
         // bigint
         assertFunction("greatest(1, 2)", BIGINT, 2L);
         assertFunction("greatest(-1, -2)", BIGINT, -1L);
@@ -440,6 +469,8 @@ public class TestMathFunctions
         assertFunction("greatest(5, 4, CAST(NULL as DOUBLE), 3)", DOUBLE, null);
 
         // mixed
+        assertFunction("greatest(INT'1', 2)", BIGINT, 2L);
+        assertFunction("greatest(1.0, INT'2')", DOUBLE, 2.0);
         assertFunction("greatest(1, 2.0)", DOUBLE, 2.0);
         assertFunction("greatest(1.0, 2)", DOUBLE, 2.0);
         assertFunction("greatest(5.0, 4, CAST(NULL as DOUBLE), 3)", DOUBLE, null);
@@ -453,6 +484,13 @@ public class TestMathFunctions
     public void testLeast()
             throws Exception
     {
+        // integer
+        assertFunction("least(INT'1', INT'2')", INT, 1);
+        assertFunction("least(INT'-1', INT'-2')", INT, -2);
+        assertFunction("least(INT'5', INT'4', INT'3', INT'2', INT'1', INT'2', INT'3', INT'4', INT'1', INT'5')", INT, 1);
+        assertFunction("least(INT'-1')", INT, -1);
+        assertFunction("least(INT'5', INT'4', CAST(NULL as INT), INT'3')", INT, null);
+        
         // bigint
         assertFunction("least(1, 2)", BIGINT, 1L);
         assertFunction("least(-1, -2)", BIGINT, -2L);
@@ -468,6 +506,8 @@ public class TestMathFunctions
         assertFunction("least(5, 4, CAST(NULL as DOUBLE), 3)", DOUBLE, null);
 
         // mixed
+        assertFunction("greatest(INT'1', 2)", BIGINT, 1L);
+        assertFunction("greatest(1.0, INT'2')", DOUBLE, 1.0);
         assertFunction("least(1, 2.0)", DOUBLE, 1.0);
         assertFunction("least(1.0, 2)", DOUBLE, 1.0);
         assertFunction("least(5.0, 4, CAST(NULL as DOUBLE), 3)", DOUBLE, null);
