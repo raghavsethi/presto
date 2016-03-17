@@ -62,6 +62,7 @@ public class ExchangeClient
     private final int concurrentRequestMultiplier;
     private final Duration minErrorDuration;
     private final HttpClient httpClient;
+    private final ExchangeHttpStats exchangeHttpStats;
     private final ScheduledExecutorService executor;
 
     @GuardedBy("this")
@@ -100,6 +101,7 @@ public class ExchangeClient
             int concurrentRequestMultiplier,
             Duration minErrorDuration,
             HttpClient httpClient,
+            ExchangeHttpStats exchangeHttpStats,
             ScheduledExecutorService executor,
             SystemMemoryUsageListener systemMemoryUsageListener)
     {
@@ -109,6 +111,7 @@ public class ExchangeClient
         this.concurrentRequestMultiplier = concurrentRequestMultiplier;
         this.minErrorDuration = minErrorDuration;
         this.httpClient = httpClient;
+        this.exchangeHttpStats = exchangeHttpStats;
         this.executor = executor;
         this.systemMemoryUsageListener = systemMemoryUsageListener;
     }
@@ -263,6 +266,7 @@ public class ExchangeClient
             if (!allClients.containsKey(location)) {
                 HttpPageBufferClient client = new HttpPageBufferClient(
                         httpClient,
+                        exchangeHttpStats,
                         maxResponseSize,
                         minErrorDuration,
                         location,

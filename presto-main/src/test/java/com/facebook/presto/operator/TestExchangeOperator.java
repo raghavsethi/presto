@@ -111,6 +111,7 @@ public class TestExchangeOperator
                 3,
                 new Duration(1, TimeUnit.MINUTES),
                 httpClient,
+                new ExchangeHttpStats(),
                 executor,
                 systemMemoryUsageListener);
     }

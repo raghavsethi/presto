@@ -93,6 +93,7 @@ public class TestHttpPageBufferClient
 
         URI location = URI.create("http://localhost:8080");
         HttpPageBufferClient client = new HttpPageBufferClient(new TestingHttpClient(processor, executor),
+                new ExchangeHttpStats(),
                 expectedMaxSize,
                 new Duration(1, TimeUnit.MINUTES),
                 location,
@@ -178,6 +179,7 @@ public class TestHttpPageBufferClient
 
         URI location = URI.create("http://localhost:8080");
         HttpPageBufferClient client = new HttpPageBufferClient(new TestingHttpClient(processor, executor),
+                new ExchangeHttpStats(),
                 new DataSize(10, Unit.MEGABYTE),
                 new Duration(1, TimeUnit.MINUTES),
                 location,
@@ -218,6 +220,7 @@ public class TestHttpPageBufferClient
 
         URI location = URI.create("http://localhost:8080");
         HttpPageBufferClient client = new HttpPageBufferClient(new TestingHttpClient(processor, executor),
+                new ExchangeHttpStats(),
                 new DataSize(10, Unit.MEGABYTE),
                 new Duration(1, TimeUnit.MINUTES),
                 location,
@@ -286,6 +289,7 @@ public class TestHttpPageBufferClient
 
         URI location = URI.create("http://localhost:8080");
         HttpPageBufferClient client = new HttpPageBufferClient(new TestingHttpClient(processor, executor),
+                new ExchangeHttpStats(),
                 new DataSize(10, Unit.MEGABYTE),
                 new Duration(1, TimeUnit.MINUTES),
                 location,
@@ -335,6 +339,7 @@ public class TestHttpPageBufferClient
 
         URI location = URI.create("http://localhost:8080");
         HttpPageBufferClient client = new HttpPageBufferClient(new TestingHttpClient(processor, executor),
+                new ExchangeHttpStats(),
                 new DataSize(10, Unit.MEGABYTE),
                 new Duration(1, TimeUnit.MINUTES),
                 location,

@@ -104,6 +104,7 @@ public final class HttpPageBufferClient
     }
 
     private final HttpClient httpClient;
+    private final ExchangeHttpStats exchangeHttpStats;
     private final DataSize maxResponseSize;
     private final Duration minErrorDuration;
     private final URI location;
@@ -139,6 +140,7 @@ public final class HttpPageBufferClient
 
     public HttpPageBufferClient(
             HttpClient httpClient,
+            ExchangeHttpStats exchangeHttpStats,
             DataSize maxResponseSize,
             Duration minErrorDuration,
             URI location,
@@ -146,11 +148,12 @@ public final class HttpPageBufferClient
             BlockEncodingSerde blockEncodingSerde,
             ScheduledExecutorService executor)
     {
-        this(httpClient, maxResponseSize, minErrorDuration, location, clientCallback, blockEncodingSerde, executor, Stopwatch.createUnstarted());
+        this(httpClient, exchangeHttpStats, maxResponseSize, minErrorDuration, location, clientCallback, blockEncodingSerde, executor, Stopwatch.createUnstarted());
     }
 
     public HttpPageBufferClient(
             HttpClient httpClient,
+            ExchangeHttpStats exchangeHttpStats,
             DataSize maxResponseSize,
             Duration minErrorDuration,
             URI location,
@@ -160,6 +163,7 @@ public final class HttpPageBufferClient
             Stopwatch errorStopwatch)
     {
         this.httpClient = requireNonNull(httpClient, "httpClient is null");
+        this.exchangeHttpStats = requireNonNull(exchangeHttpStats, "exchangeHttpStats is null");
         this.maxResponseSize = requireNonNull(maxResponseSize, "maxResponseSize is null");
         this.minErrorDuration = requireNonNull(minErrorDuration, "minErrorDuration is null");
         this.location = requireNonNull(location, "location is null");
@@ -336,6 +340,7 @@ public final class HttpPageBufferClient
                     errorDelayMillis = 0;
                 }
                 requestsCompleted.incrementAndGet();
+                exchangeHttpStats.recordSuccess();
                 clientCallback.requestComplete(HttpPageBufferClient.this);
             }
 
@@ -410,6 +415,10 @@ public final class HttpPageBufferClient
 
         if (t instanceof PrestoException) {
             clientCallback.clientFailed(HttpPageBufferClient.this, t);
+            exchangeHttpStats.recordError();
+        }
+        else {
+            exchangeHttpStats.recordFailure();
         }
 
         synchronized (HttpPageBufferClient.this) {

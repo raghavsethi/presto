@@ -54,6 +54,7 @@ import com.facebook.presto.metadata.MetadataManager;
 import com.facebook.presto.operator.ExchangeClientConfig;
 import com.facebook.presto.operator.ExchangeClientFactory;
 import com.facebook.presto.operator.ExchangeClientSupplier;
+import com.facebook.presto.operator.ExchangeHttpStats;
 import com.facebook.presto.operator.ForExchange;
 import com.facebook.presto.operator.ForScheduler;
 import com.facebook.presto.operator.index.IndexJoinLookupStats;
@@ -196,6 +197,8 @@ public class ServerMainModule
                 });
 
         configBinder(binder).bindConfig(ExchangeClientConfig.class);
+        binder.bind(ExchangeHttpStats.class).in(Scopes.SINGLETON);
+        newExporter(binder).export(ExchangeHttpStats.class).withGeneratedName();
         binder.bind(ExchangeExecutionMBean.class).in(Scopes.SINGLETON);
         newExporter(binder).export(ExchangeExecutionMBean.class).withGeneratedName();
 

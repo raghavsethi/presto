@@ -35,6 +35,7 @@ public class ExchangeClientFactory
     private final int concurrentRequestMultiplier;
     private final Duration minErrorDuration;
     private final HttpClient httpClient;
+    private final ExchangeHttpStats exchangeHttpStats;
     private final DataSize maxResponseSize;
     private final ScheduledExecutorService executor;
 
@@ -42,6 +43,7 @@ public class ExchangeClientFactory
     public ExchangeClientFactory(BlockEncodingSerde blockEncodingSerde,
             ExchangeClientConfig config,
             @ForExchange HttpClient httpClient,
+            ExchangeHttpStats exchangeHttpStats,
             @ForExchange ScheduledExecutorService executor)
     {
         this(blockEncodingSerde,
@@ -50,6 +52,7 @@ public class ExchangeClientFactory
                 config.getConcurrentRequestMultiplier(),
                 config.getMinErrorDuration(),
                 httpClient,
+                exchangeHttpStats,
                 executor);
     }
 
@@ -60,6 +63,7 @@ public class ExchangeClientFactory
             int concurrentRequestMultiplier,
             Duration minErrorDuration,
             HttpClient httpClient,
+            ExchangeHttpStats exchangeHttpStats,
             ScheduledExecutorService executor)
     {
         this.blockEncodingSerde = blockEncodingSerde;
@@ -67,6 +71,7 @@ public class ExchangeClientFactory
         this.concurrentRequestMultiplier = concurrentRequestMultiplier;
         this.minErrorDuration = requireNonNull(minErrorDuration, "minErrorDuration is null");
         this.httpClient = requireNonNull(httpClient, "httpClient is null");
+        this.exchangeHttpStats = requireNonNull(exchangeHttpStats, "exchangeHttpStats is null");
 
         // Use only 0.75 of the maxResponseSize to leave room for additional bytes from the encoding
         // TODO figure out a better way to compute the size of data that will be transferred over the network
@@ -91,6 +96,7 @@ public class ExchangeClientFactory
                 concurrentRequestMultiplier,
                 minErrorDuration,
                 httpClient,
+                exchangeHttpStats,
                 executor,
                 systemMemoryUsageListener);
     }
