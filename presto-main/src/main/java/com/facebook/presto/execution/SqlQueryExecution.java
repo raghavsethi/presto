@@ -16,6 +16,7 @@ package com.facebook.presto.execution;
 import com.facebook.presto.OutputBuffers;
 import com.facebook.presto.Session;
 import com.facebook.presto.SystemSessionProperties;
+import com.facebook.presto.execution.QueryStatisticsStateMachine.QueryStatisticsState;
 import com.facebook.presto.execution.StateMachine.StateChangeListener;
 import com.facebook.presto.execution.scheduler.ExecutionPolicy;
 import com.facebook.presto.execution.scheduler.NodeScheduler;
@@ -74,6 +75,7 @@ public final class SqlQueryExecution
             .withNoMoreBufferIds();
 
     private final QueryStateMachine stateMachine;
+    private final QueryStatisticsStateMachine statsStateMachine;
 
     private final Statement statement;
     private final Metadata metadata;
@@ -141,6 +143,7 @@ public final class SqlQueryExecution
             requireNonNull(session, "session is null");
             requireNonNull(self, "self is null");
             this.stateMachine = QueryStateMachine.begin(queryId, query, session, self, false, transactionManager, queryExecutor);
+            this.statsStateMachine = new QueryStatisticsStateMachine(queryId.toString(), queryExecutor);
 
             // when the query finishes cache the final query info, and clear the reference to the output stage
             stateMachine.addStateChangeListener(state -> {
@@ -250,6 +253,37 @@ public final class SqlQueryExecution
     {
         try (SetThreadName ignored = new SetThreadName("Query-%s", stateMachine.getQueryId())) {
             stateMachine.addStateChangeListener(stateChangeListener);
+        }
+    }
+
+    @Override
+    public void addFinalStatisticsListener(StateChangeListener<QueryStatisticsState> statisticsStateChangeListener)
+    {
+        try (SetThreadName ignored = new SetThreadName("Query-%s", stateMachine.getQueryId())) {
+            statsStateMachine.addStateChangeListener(statisticsStateChangeListener);
+        }
+    }
+
+    @Override
+    public void collectFinalStats()
+    {
+        try (SetThreadName ignored = new SetThreadName("Query-%s", stateMachine.getQueryId())) {
+            statsStateMachine.addStateChangeListener(newValue -> {
+                if (newValue == QueryStatisticsState.COLLECTING_FINAL) {
+                    try {
+                        while(finalQueryInfo.get() == null) {
+                            Thread.sleep(100);
+                            getQueryInfo();
+                        }
+                        statsStateMachine.transitionToFinal();
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            statsStateMachine.transitionToCollectingFinal();
         }
     }
 

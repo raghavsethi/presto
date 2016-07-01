@@ -14,6 +14,7 @@
 package com.facebook.presto.execution;
 
 import com.facebook.presto.Session;
+import com.facebook.presto.execution.QueryStatisticsStateMachine.QueryStatisticsState;
 import com.facebook.presto.execution.StateMachine.StateChangeListener;
 import com.facebook.presto.memory.VersionedMemoryPoolId;
 import com.facebook.presto.transaction.TransactionManager;
@@ -107,6 +108,18 @@ public class FailedQueryExecution
     public void addStateChangeListener(StateChangeListener<QueryState> stateChangeListener)
     {
         stateChangeListener.stateChanged(QueryState.FAILED);
+    }
+
+    @Override
+    public void addFinalStatisticsListener(StateChangeListener<QueryStatisticsState> statisticsStateChangeListener)
+    {
+        statisticsStateChangeListener.stateChanged(QueryStatisticsState.FINAL);
+    }
+
+    @Override
+    public void collectFinalStats()
+    {
+
     }
 
     @Override

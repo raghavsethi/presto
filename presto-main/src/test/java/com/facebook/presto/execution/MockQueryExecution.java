@@ -194,6 +194,17 @@ public class MockQueryExecution
         listeners.add(stateChangeListener);
     }
 
+    @Override
+    public void addFinalStatisticsListener(StateChangeListener<QueryStatisticsStateMachine.QueryStatisticsState> statisticsStateChangeListener)
+    {
+    }
+
+    @Override
+    public void collectFinalStats()
+    {
+
+    }
+
     private void fireStateChange()
     {
         for (StateChangeListener<QueryState> listener : listeners) {

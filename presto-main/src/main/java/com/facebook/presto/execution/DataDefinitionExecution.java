@@ -44,6 +44,7 @@ public class DataDefinitionExecution<T extends Statement>
     private final Metadata metadata;
     private final AccessControl accessControl;
     private final QueryStateMachine stateMachine;
+    private final QueryStatisticsStateMachine statisticsStateMachine;
 
     private DataDefinitionExecution(
             DataDefinitionTask<T> task,
@@ -51,7 +52,8 @@ public class DataDefinitionExecution<T extends Statement>
             TransactionManager transactionManager,
             Metadata metadata,
             AccessControl accessControl,
-            QueryStateMachine stateMachine)
+            QueryStateMachine stateMachine,
+            QueryStatisticsStateMachine statisticsStateMachine)
     {
         this.task = requireNonNull(task, "task is null");
         this.statement = requireNonNull(statement, "statement is null");
@@ -59,6 +61,7 @@ public class DataDefinitionExecution<T extends Statement>
         this.metadata = requireNonNull(metadata, "metadata is null");
         this.accessControl = requireNonNull(accessControl, "accessControl is null");
         this.stateMachine = requireNonNull(stateMachine, "stateMachine is null");
+        this.statisticsStateMachine = requireNonNull(statisticsStateMachine, "statsStateMachine is null");
     }
 
     @Override
@@ -130,6 +133,18 @@ public class DataDefinitionExecution<T extends Statement>
     public void addStateChangeListener(StateChangeListener<QueryState> stateChangeListener)
     {
         stateMachine.addStateChangeListener(stateChangeListener);
+    }
+
+    @Override
+    public void addFinalStatisticsListener(StateChangeListener<QueryStatisticsStateMachine.QueryStatisticsState> statisticsStateChangeListener)
+    {
+        statisticsStateMachine.addStateChangeListener(statisticsStateChangeListener);
+    }
+
+    @Override
+    public void collectFinalStats()
+    {
+
     }
 
     @Override
@@ -227,8 +242,9 @@ public class DataDefinitionExecution<T extends Statement>
             checkArgument(task != null, "no task for statement: %s", statement.getClass().getSimpleName());
 
             QueryStateMachine stateMachine = QueryStateMachine.begin(queryId, query, session, self, task.isTransactionControl(), transactionManager, executor);
+            QueryStatisticsStateMachine statisticsStateMachine = new QueryStatisticsStateMachine(queryId.toString(), executor);
             stateMachine.setUpdateType(task.getName());
-            return new DataDefinitionExecution<>(task, statement, transactionManager, metadata, accessControl, stateMachine);
+            return new DataDefinitionExecution<>(task, statement, transactionManager, metadata, accessControl, stateMachine, statisticsStateMachine);
         }
 
         @SuppressWarnings("unchecked")

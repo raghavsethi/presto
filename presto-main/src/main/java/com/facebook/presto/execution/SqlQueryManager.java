@@ -319,9 +319,16 @@ public class SqlQueryManager
 
         queryExecution.addStateChangeListener(newValue -> {
             if (newValue.isDone()) {
+                QueryInfo info = queryExecution.getQueryInfo();
+                stats.queryFinished(info);
+                queryExecution.collectFinalStats();
+            }
+        });
+
+        queryExecution.addFinalStatisticsListener(newValue -> {
+            if (newValue == QueryStatisticsStateMachine.QueryStatisticsState.FINAL) {
                 try {
                     QueryInfo info = queryExecution.getQueryInfo();
-                    stats.queryFinished(info);
                     queryMonitor.completionEvent(info);
                 }
                 finally {

@@ -17,6 +17,7 @@ import com.facebook.presto.Session;
 import com.facebook.presto.execution.StateMachine.StateChangeListener;
 import com.facebook.presto.memory.VersionedMemoryPoolId;
 import com.facebook.presto.sql.tree.Statement;
+import io.airlift.concurrent.SetThreadName;
 import io.airlift.units.Duration;
 
 public interface QueryExecution
@@ -54,6 +55,10 @@ public interface QueryExecution
     void pruneInfo();
 
     void addStateChangeListener(StateChangeListener<QueryState> stateChangeListener);
+
+    void addFinalStatisticsListener(StateChangeListener<QueryStatisticsStateMachine.QueryStatisticsState> statisticsStateChangeListener);
+
+    void collectFinalStats();
 
     interface QueryExecutionFactory<T extends QueryExecution>
     {
