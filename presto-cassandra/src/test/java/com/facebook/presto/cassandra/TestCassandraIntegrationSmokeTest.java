@@ -13,6 +13,8 @@
  */
 package com.facebook.presto.cassandra;
 
+import com.datastax.driver.core.querybuilder.Insert;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.facebook.presto.Session;
 import com.facebook.presto.spi.type.Type;
 import com.facebook.presto.testing.MaterializedResult;
@@ -36,6 +38,7 @@ import static com.facebook.presto.cassandra.CassandraTestingUtils.TABLE_ALL_TYPE
 import static com.facebook.presto.cassandra.CassandraTestingUtils.TABLE_CLUSTERING_KEYS;
 import static com.facebook.presto.cassandra.CassandraTestingUtils.TABLE_CLUSTERING_KEYS_LARGE;
 import static com.facebook.presto.cassandra.CassandraTestingUtils.TABLE_MULTI_PARTITION_CLUSTERING_KEYS;
+import static com.facebook.presto.cassandra.CassandraTestingUtils.TABLE_WITH_EMPTY_BLOB_CELL;
 import static com.facebook.presto.cassandra.CassandraTestingUtils.createTestTables;
 import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
@@ -193,6 +196,25 @@ public class TestCassandraIntegrationSmokeTest
         assertEquals(execute(sql).getRowCount(), 1);
         sql = "SELECT * FROM " + TABLE_CLUSTERING_KEYS_LARGE + " WHERE clust_one='clust_one' AND clust_two='clust_two_2' AND clust_three='clust_three_2'";
         assertEquals(execute(sql).getRowCount(), 1);
+    }
+
+    @Test
+    public void testSelectRowWithEmptyBlob()
+    {
+        MaterializedResult result = execute("SELECT key, typebytes from " + TABLE_WITH_EMPTY_BLOB_CELL);
+        List<MaterializedRow> row = result.getMaterializedRows();
+        assertEquals(row.get(0), new MaterializedRow(DEFAULT_PRECISION, "key 1", ByteBuffer.allocate(0)));
+    }
+
+    static void createTableWithEmptyBlobCell(com.datastax.driver.core.Session session, String keyspace, String tableName, Date date)
+    {
+        session.execute("DROP TABLE IF EXISTS " + tableName);
+        session.execute("CREATE TABLE " + tableName + " (" +
+                " key text PRIMARY KEY, " +
+                " typebytes blob" +
+                ")");
+        Insert insert = QueryBuilder.insertInto(keyspace, tableName).value("key", "key 1").value("typebytes", ByteBuffer.allocate(0));
+        session.execute(insert);
     }
 
     private void assertSelect(String tableName, boolean createdByPresto)

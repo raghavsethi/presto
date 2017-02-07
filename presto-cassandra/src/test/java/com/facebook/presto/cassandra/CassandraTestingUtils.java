@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.UUID;
 
+import static com.facebook.presto.cassandra.TestCassandraIntegrationSmokeTest.createTableWithEmptyBlobCell;
 import static org.testng.Assert.assertEquals;
 
 public class CassandraTestingUtils
@@ -37,6 +38,7 @@ public class CassandraTestingUtils
     public static final String TABLE_CLUSTERING_KEYS = "table_clustering_keys";
     public static final String TABLE_CLUSTERING_KEYS_LARGE = "table_clustering_keys_large";
     public static final String TABLE_MULTI_PARTITION_CLUSTERING_KEYS = "table_multi_partition_clustering_keys";
+    public static final String TABLE_WITH_EMPTY_BLOB_CELL = "table_with_empty_blob_cell";
 
     private CassandraTestingUtils() {}
 
@@ -48,6 +50,7 @@ public class CassandraTestingUtils
         createTableClusteringKeys(cassandraSession, new SchemaTableName(keyspace, TABLE_CLUSTERING_KEYS), 9);
         createTableClusteringKeys(cassandraSession, new SchemaTableName(keyspace, TABLE_CLUSTERING_KEYS_LARGE), 1000);
         createTableMultiPartitionClusteringKeys(cassandraSession, new SchemaTableName(keyspace, TABLE_MULTI_PARTITION_CLUSTERING_KEYS));
+        createTableWithEmptyBlobCell(session, keyspace, TABLE_WITH_EMPTY_BLOB_CELL, date);
     }
 
     public static void createKeyspace(CassandraSession session, String keyspaceName)
@@ -212,7 +215,7 @@ public class CassandraTestingUtils
                     .value("typemap", ImmutableMap.of(rowNumber, rowNumber + 1L, rowNumber + 2, rowNumber + 3L))
                     .value("typeset", ImmutableSet.of(false, true));
 
-            session.executeWithSession(s -> s.execute(insert));
+            session.execute(insert);
         }
         assertEquals(session.execute("SELECT COUNT(*) FROM " + table).all().get(0).getLong(0), 9);
     }
