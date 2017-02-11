@@ -381,7 +381,7 @@ public class TestQueryStateMachine
         if (expectedState == FAILED) {
             Optional<TaskFailureInfo> failure = queryInfo.getTaskFailureInfo();
             assertTrue(failure.isPresent());
-            assertEquals(failure.get().getType(), expectedException.getClass().getName());
+            assertEquals(failure.get().getFailureInfo().getType(), expectedException.getClass().getName());
             if (expectedException instanceof PrestoException) {
                 assertEquals(queryInfo.getErrorCode(), ((PrestoException) expectedException).getErrorCode());
             }

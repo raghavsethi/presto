@@ -738,12 +738,12 @@ public class StatementResource
                 log.warn("Failed query %s has no error code", queryInfo.getQueryId());
             }
             return new QueryError(
-                    failure.get().getMessage(),
+                    failure.get().getFailureInfo().getMessage(),
                     null,
                     errorCode.getCode(),
                     errorCode.getName(),
                     errorCode.getType().toString(),
-                    failure.get().getErrorLocation(),
+                    failure.get().getFailureInfo().getErrorLocation(),
                     failure.get().getFailureInfo());
         }
 

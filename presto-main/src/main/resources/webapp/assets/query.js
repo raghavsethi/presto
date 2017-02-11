@@ -892,74 +892,70 @@ var QueryDetail = React.createClass({
     },
     renderFailureInfo: function() {
         var query = this.state.query;
-        if (query.taskFailureInfo) {
-            var taskInfo = "N/A";
-            if (query.taskFailureInfo.task != null) {
-                var task = query.taskFailureInfo.task;
-                 taskInfo = (
-                     <a href={ query.taskFailureInfo.uri + "?pretty" }>
-                         { getTaskIdSuffix(task)}
-                     </a>
-                     );
-                }
-            }
-            return (
-                <div className="row">
-                    <div className="col-xs-12">
-                        <h3>Failure Information</h3>
-                        <table className="table">
-                            <tbody>
-                                <tr>
-                                    <td className="info-title">
-                                        Error Type
-                                    </td>
-                                    <td className="info-text">
-                                        { query.errorType }
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="info-title">
-                                        Error Code
-                                    </td>
-                                    <td className="info-text">
-                                        { query.errorCode.name + " (" + this.state.query.errorCode.code + ")" }
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="info-title">
-                                        Task
-                                    </td>
-                                    <td className="info-text">
-                                        { taskInfo }
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="info-title">
-                                        Host
-                                    </td>
-                                    <td className="info-text">
-                                        { query.taskFailureInfo.host ? query.taskFailureInfo.host : "N/A" }
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="info-title">
-                                        Stack Trace
-                                    </td>
-                                    <td className="info-text">
-                                        <pre className="stack-trace">
-                                            { formatStackTrace(query.taskFailureInfo) }
-                                        </pre>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+        if (!query.taskFailureInfo) {
+            return null;
+        }
+
+        var taskLink = "Unavailable";
+        var taskHost = "Unavailable";
+        if (query.taskFailureInfo.failureTask && query.taskFailureInfo.uri) {
+            taskLink = (<a href={ query.taskFailureInfo.uri + "?pretty" }> { getTaskIdSuffix(query.taskFailureInfo.failureTask)} </a>);
+            taskHost = getHostAndPort(query.taskFailureInfo.uri);
+        }
+
+        return (
+            <div className="row">
+                <div className="col-xs-12">
+                    <h3>Failure Information</h3>
+                    <table className="table">
+                        <tbody>
+                            <tr>
+                                <td className="info-title">
+                                    Error Type
+                                </td>
+                                <td className="info-text">
+                                    { query.errorType }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="info-title">
+                                    Error Code
+                                </td>
+                                <td className="info-text">
+                                    { query.errorCode.name + " (" + this.state.query.errorCode.code + ")" }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="info-title">
+                                    Task
+                                </td>
+                                <td className="info-text">
+                                    { taskLink }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="info-title">
+                                    Host
+                                </td>
+                                <td className="info-text">
+                                    { taskHost }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="info-title">
+                                    Stack Trace
+                                </td>
+                                <td className="info-text">
+                                    <pre className="stack-trace">
+                                        { formatStackTrace(query.taskFailureInfo.failureInfo) }
+                                    </pre>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            );
-        }
-        else {
-            return "";
-        }
+            </div>
+        );
     },
     render: function() {
         var query = this.state.query;

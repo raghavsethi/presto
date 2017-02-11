@@ -13,17 +13,14 @@
  */
 package com.facebook.presto.execution;
 
-import com.facebook.presto.client.ErrorLocation;
 import com.facebook.presto.client.FailureInfo;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.validation.constraints.NotNull;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -34,100 +31,36 @@ public class TaskFailureInfo
     private final FailureInfo failureInfo;
     private final Optional<String> failureTask;
     private final Optional<URI>  failureTaskUri;
-    private final Optional<String> failureHost;
-    private final Optional<Integer> failurePort;
 
     @JsonCreator
     public TaskFailureInfo(
-            @JsonProperty("type") String type,
-            @JsonProperty("message") String message,
-            @JsonProperty("cause") FailureInfo cause,
-            @JsonProperty("suppressed") List<FailureInfo> suppressed,
-            @JsonProperty("stack") List<String> stack,
-            @JsonProperty("errorLocation") @Nullable ErrorLocation errorLocation,
-            @JsonProperty("task") Optional<String> task,
-            @JsonProperty("uri") Optional<URI> uri,
-            @JsonProperty("host") Optional<String> host,
-            @JsonProperty("port") Optional<Integer> port)
+            @JsonProperty("cause") FailureInfo failureInfo,
+            @JsonProperty("task") Optional<String> taskId,
+            @JsonProperty("uri") Optional<URI> uri)
     {
         requireNonNull(uri, "uri is null");
-        requireNonNull(task, "task is null");
-        requireNonNull(host, "host is null");
-        requireNonNull(port, "port is null");
+        requireNonNull(taskId, "task is null");
 
-        this.failureInfo = new FailureInfo(type, message, cause, suppressed, stack, errorLocation);
-        this.failureTask = task;
-        this.failureTaskUri = uri;
-        this.failureHost = host;
-        this.failurePort = port;
+        this.failureInfo = requireNonNull(failureInfo, "failureInfo is null");
+        this.failureTask = requireNonNull(taskId, "task is null");
+        this.failureTaskUri = requireNonNull(uri, "uri is null");
     }
 
     public TaskFailureInfo(FailureInfo failureInfo)
     {
-        requireNonNull(failureInfo, "failureInfo is null");
-
-        this.failureInfo = failureInfo;
-        this.failureTask = Optional.empty();
-        this.failureTaskUri = Optional.empty();
-        this.failureHost = Optional.empty();
-        this.failurePort = Optional.empty();
+        this(failureInfo, Optional.empty(), Optional.empty());
     }
 
-    public TaskFailureInfo(FailureInfo failureInfo, Optional<String> task, Optional<URI> uri, Optional<String> host, Optional<Integer> port)
+    public TaskFailureInfo(FailureInfo failureInfo, String taskId, URI uri)
     {
-        requireNonNull(failureInfo, "failureInfo is null");
-        requireNonNull(task, "task is null");
-        requireNonNull(uri, "uri is null");
-        requireNonNull(host, "host is null");
-        requireNonNull(port, "port is null");
-
-        this.failureInfo = failureInfo;
-        this.failureTask = task;
-        this.failureTaskUri = uri;
-        this.failureHost = host;
-        this.failurePort = port;
+        this(failureInfo, Optional.of(taskId), Optional.of(uri));
     }
 
     @NotNull
     @JsonProperty
-    public String getType()
+    public FailureInfo getFailureInfo()
     {
-        return failureInfo.getType();
-    }
-
-    @Nullable
-    @JsonProperty
-    public String getMessage()
-    {
-        return failureInfo.getMessage();
-    }
-
-    @Nullable
-    @JsonProperty
-    public FailureInfo getCause()
-    {
-        return failureInfo.getCause();
-    }
-
-    @NotNull
-    @JsonProperty
-    public List<FailureInfo> getSuppressed()
-    {
-        return failureInfo.getSuppressed();
-    }
-
-    @NotNull
-    @JsonProperty
-    public List<String> getStack()
-    {
-        return failureInfo.getStack();
-    }
-
-    @Nullable
-    @JsonProperty
-    public ErrorLocation getErrorLocation()
-    {
-        return failureInfo.getErrorLocation();
+        return failureInfo;
     }
 
     @NotNull
@@ -142,25 +75,5 @@ public class TaskFailureInfo
     public Optional<URI> getUri()
     {
         return failureTaskUri;
-    }
-
-   @NotNull
-    @JsonProperty
-    public Optional<String> getHost()
-    {
-        return failureHost;
-    }
-
-    @NotNull
-    @JsonProperty
-    public Optional<Integer> getPort()
-    {
-        return failurePort;
-    }
-
-    @NotNull
-    public FailureInfo getFailureInfo()
-    {
-        return failureInfo;
     }
 }

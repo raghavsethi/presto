@@ -240,13 +240,13 @@ public class QueryInfo
         return outputStage;
     }
 
-    @NotNull
     @JsonProperty
     public Optional<TaskFailureInfo> getTaskFailureInfo()
     {
         return taskFailureInfo;
     }
 
+    @Nullable
     @JsonProperty
     public ErrorType getErrorType()
     {

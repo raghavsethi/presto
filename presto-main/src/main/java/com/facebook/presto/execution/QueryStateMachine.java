@@ -276,20 +276,23 @@ public class QueryStateMachine
             elapsedTime = nanosSince(createNanos);
         }
 
-        // don't report failure info is query is marked as success
         Optional<TaskFailureInfo> taskFailureInfo = Optional.empty();
         ErrorCode errorCode = null;
+
         if (state == FAILED) {
             ExecutionFailureInfo failureCause = this.failureCause.get();
             if (failureCause != null) {
+                errorCode = failureCause.getErrorCode();
                 Optional<TaskInfo> failedTask = rootStage.flatMap(QueryStateMachine::findFailedTask);
                 FailureInfo failureInfo = failureCause.toFailureInfo();
-                Optional<String> failureTask = failedTask.map(task -> task.getTaskStatus().getTaskId().toString());
-                Optional<URI> failureUri = failedTask.map(task -> task.getTaskStatus().getSelf());
-                Optional<String> failureHost = failedTask.map(task -> task.getTaskStatus().getSelf().getHost());
-                Optional<Integer> failurePort = failedTask.map(task -> task.getTaskStatus().getSelf().getPort());
-                taskFailureInfo = Optional.of(new TaskFailureInfo(failureInfo, failureTask, failureUri, failureHost, failurePort));
-                errorCode = failureCause.getErrorCode();
+
+                if (failedTask.isPresent()) {
+                    TaskInfo task = failedTask.get();
+                    taskFailureInfo = Optional.of(new TaskFailureInfo(failureInfo, task.getTaskStatus().getTaskId().toString(), task.getTaskStatus().getSelf()));
+                }
+                else {
+                    taskFailureInfo = Optional.of(new TaskFailureInfo(failureInfo));
+                }
             }
         }
 

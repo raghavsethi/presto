@@ -188,8 +188,6 @@ public class TestServer
         // This happens during planning, no task is scheduled, so there is no task/host
         assertFalse(queryInfo.getTaskFailureInfo().get().getTask().isPresent());
         assertFalse(queryInfo.getTaskFailureInfo().get().getUri().isPresent());
-        assertFalse(queryInfo.getTaskFailureInfo().get().getHost().isPresent());
-        assertFalse(queryInfo.getTaskFailureInfo().get().getPort().isPresent());
     }
 
     @Test
@@ -205,8 +203,6 @@ public class TestServer
         assertTrue(queryInfo.getTaskFailureInfo().isPresent());
         assertTrue(queryInfo.getTaskFailureInfo().get().getTask().isPresent());
         assertTrue(queryInfo.getTaskFailureInfo().get().getUri().isPresent());
-        assertTrue(queryInfo.getTaskFailureInfo().get().getHost().isPresent());
-        assertTrue(queryInfo.getTaskFailureInfo().get().getPort().isPresent());
     }
 
     @Test

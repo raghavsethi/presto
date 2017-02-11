@@ -54,6 +54,7 @@ import org.joda.time.DateTime;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -129,14 +130,14 @@ public class QueryMonitor
             Optional<QueryFailureInfo> queryFailureInfo = Optional.empty();
 
             if (queryInfo.getTaskFailureInfo().isPresent()) {
-                TaskFailureInfo failureInfo = queryInfo.getTaskFailureInfo().get();
+                TaskFailureInfo taskFailure = queryInfo.getTaskFailureInfo().get();
 
                 queryFailureInfo = Optional.of(new QueryFailureInfo(
                         queryInfo.getErrorCode(),
-                        Optional.ofNullable(failureInfo.getType()),
-                        Optional.ofNullable(failureInfo.getMessage()),
-                        failureInfo.getTask(),
-                        failureInfo.getHost(),
+                        Optional.ofNullable(taskFailure.getFailureInfo().getType()),
+                        Optional.ofNullable(taskFailure.getFailureInfo().getMessage()),
+                        taskFailure.getTask(),
+                        taskFailure.getUri().map(URI::getHost),
                         objectMapper.writeValueAsString(queryInfo.getTaskFailureInfo())));
             }
 
