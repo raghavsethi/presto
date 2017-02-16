@@ -122,6 +122,9 @@ public class TaskExecutor
     private final TimeStat queuedTime = new TimeStat(NANOSECONDS);
     private final TimeStat wallTime = new TimeStat(NANOSECONDS);
 
+    // shared between SplitRunners
+    private final TimeStat quantaWallTime = new TimeStat(NANOSECONDS);
+
     private volatile boolean closed;
 
     @Inject
@@ -233,7 +236,7 @@ public class TaskExecutor
         List<ListenableFuture<?>> finishedFutures = new ArrayList<>(taskSplits.size());
         synchronized (this) {
             for (SplitRunner taskSplit : taskSplits) {
-                PrioritizedSplitRunner prioritizedSplitRunner = new PrioritizedSplitRunner(taskHandle, taskSplit, ticker);
+                PrioritizedSplitRunner prioritizedSplitRunner = new PrioritizedSplitRunner(taskHandle, taskSplit, ticker, quantaWallTime);
 
                 if (taskHandle.isDestroyed()) {
                     // If the handle is destroyed, we destroy the task splits to complete the future
@@ -495,13 +498,16 @@ public class TaskExecutor
         private final AtomicLong cpuTime = new AtomicLong();
         private final AtomicLong processCalls = new AtomicLong();
 
-        private PrioritizedSplitRunner(TaskHandle taskHandle, SplitRunner split, Ticker ticker)
+        private final TimeStat quantaWallTime;
+
+        private PrioritizedSplitRunner(TaskHandle taskHandle, SplitRunner split, Ticker ticker, TimeStat quantaWallTime)
         {
             this.taskHandle = taskHandle;
             this.splitId = taskHandle.getNextSplitId();
             this.split = split;
             this.ticker = ticker;
             this.workerId = NEXT_WORKER_ID.getAndIncrement();
+            this.quantaWallTime = quantaWallTime;
         }
 
         private TaskHandle getTaskHandle()
@@ -562,6 +568,8 @@ public class TaskExecutor
                 long threadUsageNanos = taskHandle.addThreadUsageNanos(durationNanos);
                 this.threadUsageNanos.set(threadUsageNanos);
                 priorityLevel.set(calculatePriorityLevel(threadUsageNanos));
+
+                quantaWallTime.add(elapsed.getWall());
 
                 // record last run for prioritization within a level
                 lastRun.set(ticker.read());
